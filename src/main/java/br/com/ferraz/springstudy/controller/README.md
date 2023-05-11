@@ -28,7 +28,7 @@ deve ser o retorno direto do método. Sem ela, o Spring iria buscar um template 
 **Obs**: Veremos mais a frente como responder de forma mais sofisticada, seja retornando um arquivo HTML ou uma resposta
 formatada (como um JSON ou XML).
 
-#sdv# Principais anotações
+## Principais anotações
 
 * **@Controller**: define que aquela classe contém métodos que recebem e respondem requisições;
 * **@RestController**: similar à @Controller, mas com a adição que todos os métodos são anotados com _@ResponseBody_;
@@ -37,4 +37,6 @@ formatada (como um JSON ou XML).
 * **@GetMapping("url")**: mapeia aquele método para receber requisições do tipo GET para a URL "url";
 * **@PostMapping("url")**: similar ao @GetMapping, mas para requisições POST (também existe PUT, DELETE, etc.);
 * **@RequestMapping("url")**: mapeamento somente da URL, sem especificar o método HTTP. Pode ser usada na classe para
-  definir uma URL base para todos os métodos da mesma.
+  definir uma URL base para todos os métodos da mesma;
+* **@RequestBody Objeto obj**: indica ao Spring que o _objeto_ deve ser preenchido com os dados presentes no corpo da 
+requisição.  
