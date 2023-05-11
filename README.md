@@ -90,5 +90,6 @@ Para mais informações, veja o [README sobre CORS](READMEs/CORS.md)
 
 ## Spring Data JPA
 
-O **Spring Data JPA** é uma biblioteca ORM que facilita na integração com bancos de dados. Para mais informações, veja
-[esse README](READMEs/spring_data_jpa.md).
+O **Spring Data JPA** é uma biblioteca ORM que facilita na integração com bancos de dados. 
+
+Para mais informações, veja [esse README](READMEs/spring_data_jpa.md).
