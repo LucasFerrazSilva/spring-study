@@ -38,5 +38,23 @@ formatada (como um JSON ou XML).
 * **@PostMapping("url")**: similar ao @GetMapping, mas para requisições POST (também existe PUT, DELETE, etc.);
 * **@RequestMapping("url")**: mapeamento somente da URL, sem especificar o método HTTP. Pode ser usada na classe para
   definir uma URL base para todos os métodos da mesma;
-* **@RequestBody Objeto obj**: indica ao Spring que o _objeto_ deve ser preenchido com os dados presentes no corpo da 
+* **@RequestBody DTO obj**: indica ao Spring que o _objeto_ deve ser preenchido com os dados presentes no corpo da 
 requisição.  
+
+## Data Transfer Object (DTO)
+
+O DTO (ou _Data Transfer Object_) é um padrão de projeto que recomenda a utilização de classes auxiliares para 
+recebimento e envio de dados nos endpoints ao invés de receber os dados diretamente na classe da entidade em questão.
+
+```Java
+@PostMapping
+public String add(@RequestBody ObjectDTO obj) { ... }
+```
+
+Para facilitar a criação desse tipo de classe, o Java disponibilizou na sua versão 16 os _records_, que geram 
+automaticamente classes imutáveis com todo o boilerplate necessário para classes do tipo DTO, como getters, construtor, 
+toString, etc.:
+
+```Java
+public record ObjectDTO (String field1, Integer field2, AnotherObject anotherObject) {}
+```
