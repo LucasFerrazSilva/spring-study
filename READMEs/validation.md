@@ -36,11 +36,11 @@ Exemplo:
     "status": 400,
     "error": "Bad Request",
     "trace": "org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument ...",
-    "message": "Validation failed for object='doctorDTO'. Error count: 1",
+    "message": "Validation failed for object='doctorCreateDTO'. Error count: 1",
     "errors": [
         {
             "codes": [
-                "NotBlank.doctorDTO.name",
+                "NotBlank.doctorCreateDTO.name",
                 "NotBlank.name",
                 "NotBlank.java.lang.String",
                 "NotBlank"
@@ -48,7 +48,7 @@ Exemplo:
             "arguments": [
                 {
                     "codes": [
-                        "doctorDTO.name",
+                        "doctorCreateDTO.name",
                         "name"
                     ],
                     "arguments": null,
@@ -57,7 +57,7 @@ Exemplo:
                 }
             ],
             "defaultMessage": "O nome não pode estar vazio.",
-            "objectName": "doctorDTO",
+            "objectName": "doctorCreateDTO",
             "field": "name",
             "rejectedValue": "",
             "bindingFailure": false,

@@ -1,7 +1,7 @@
 package br.com.ferraz.springstudy.controller;
 
 import br.com.ferraz.springstudy.doctor.Doctor;
-import br.com.ferraz.springstudy.doctor.DoctorDTO;
+import br.com.ferraz.springstudy.doctor.DoctorCreateDTO;
 import br.com.ferraz.springstudy.doctor.DoctorReadDTO;
 import br.com.ferraz.springstudy.doctor.DoctorRepository;
 import jakarta.transaction.Transactional;
@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/medicos")
@@ -26,8 +24,8 @@ public class DoctorController {
 
     @PostMapping
     @Transactional
-    public String add(@RequestBody @Valid DoctorDTO doctorDTO) {
-        Doctor doctor = new Doctor(doctorDTO);
+    public String add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO) {
+        Doctor doctor = new Doctor(doctorCreateDTO);
         repository.save(doctor);
         return String.format("Médico %s adicionado com sucesso!", doctor.getName());
     }
@@ -39,9 +37,9 @@ public class DoctorController {
         return list;
     }
 
-//    @PutMapping("/{id}")
+//    @PutMapping
 //    @Transactional
-//    public String update(@RequestParam(name="id") Long id, @RequestBody @Valid DoctorDTO doctorDTO) {
+//    public String update(@RequestBody DoctorDTO doctorDTO) {
 //        return String.format("Id: %d, Médico: %s", id, doctorDTO.name());
 //    }
 

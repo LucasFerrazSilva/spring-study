@@ -23,7 +23,7 @@ public class Doctor {
     @Embedded
     private Address address;
 
-    public Doctor(DoctorDTO dto) {
+    public Doctor(DoctorCreateDTO dto) {
         this.name = dto.name();
         this.email = dto.email();
         this.crm = dto.crm();

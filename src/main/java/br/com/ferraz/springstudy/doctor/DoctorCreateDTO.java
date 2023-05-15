@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public record DoctorDTO(
+public record DoctorCreateDTO(
         @NotBlank(message="O nome não pode estar vazio.")
         String name,
         @NotBlank
