@@ -10,10 +10,30 @@ dados. Caso contrário, ele irá lançar um erro quando a aplicação for inicia
 Configurações:
 
 ```
+spring.datasource.driver-class-name=driver (ex: com.mysql.cj.jdbc.Driver)
 spring.datasource.url=jdbc:mysql://localhost/nome_da_base_de_dados
 spring.datasource.username=usuario
 spring.datasource.password=senha
-spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.hibernate.ddl-auto=valor (create, update, create-drop, validate, none)
+```
+
+### YAML
+
+Além do padrão _application.properties_, podemos criar um arquivo usando o formato YAML chamado _application.yml_. Esse
+formato é interessante por ser mais legível e menos verboso, visto que ele agrupa configurações por hierarquia.
+
+As configurações acima escritas no formato YAML ficariam da seguinte forma:
+
+```
+spring:
+    datasource:
+        driver-class-name: driver
+        url: jdbc:mysql://localhost/nome_da_base_de_dados
+        username: usuario
+        password: senha
+    jpa:
+        hibernate:
+            ddl-auto: valor
 ```
 
 ## ddl-auto
