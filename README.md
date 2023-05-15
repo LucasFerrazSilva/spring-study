@@ -93,3 +93,16 @@ Para mais informações, veja o [README sobre CORS](READMEs/CORS.md)
 O **Spring Data JPA** é uma biblioteca ORM que facilita na integração com bancos de dados. 
 
 Para mais informações, veja [esse README](READMEs/spring_data_jpa.md).
+
+## Flyway
+
+O Flyway é uma ferramenta de controle de versão do banco de dados, também chamada de ferramenta de migração
+(_Migrations_).
+
+Para mais informações, veja [esse README](READMEs/flyway.md).
+
+## Validation
+
+O Spring Validation é a biblioteca que adiciona diversas anotações úteis que auxiliam na validação dos dados recebidos.
+
+Para mais informações, veja [esse README](READMEs/validation.md).

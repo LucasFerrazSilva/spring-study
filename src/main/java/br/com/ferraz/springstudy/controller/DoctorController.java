@@ -4,6 +4,7 @@ import br.com.ferraz.springstudy.doctor.Doctor;
 import br.com.ferraz.springstudy.doctor.DoctorDTO;
 import br.com.ferraz.springstudy.doctor.DoctorRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class DoctorController {
 
     @PostMapping
     @Transactional
-    public String add(@RequestBody DoctorDTO doctorDTO) {
+    public String add(@RequestBody @Valid DoctorDTO doctorDTO) {
         Doctor doctor = new Doctor(doctorDTO);
         repository.save(doctor);
         return String.format("Médico %s adicionado com sucesso!", doctor.getName());
