@@ -147,6 +147,12 @@ public class Doctor {
 
 ## Repository
 
+Ao invés de utilizar o padrão de projeto _DAO (Data Transfer Object)_, o Spring usa o _Repository_. Segundo o livro 
+_Domain-Driven Design_, a definição do padrão _Repository_ é:
+
+> O repositório é um mecanismo para encapsular armazenamento, recuperação e comportamento de pesquisa, que emula uma 
+> coleção de objetos.
+
 Para realizar as ações no banco de dados (como inserção, atualização, etc.) precisamos criar uma interface para cada 
 entidade que extende _JpaRepository_, especificando a entidade a que ela se refere e o tipo da coluna ID:
 
