@@ -43,3 +43,12 @@ Migrating schema `spring_study` to version "1 - create-table-doctors"
 ```
 
 O histórico das versão gerenciadas pelo Flyway pode ser verificado na tabela _flyway_schema_history_.
+
+## Erro ao executar migração
+
+Caso ocorra um erro ao executar uma migração (como por causa de um comando inválido, por exemplo), precisamos executar o
+comando _delete from flyway_schema_history where success = 0;_ no banco de dados.
+
+Pode acontecer de a migração ter criado tabelas/campos antes de ocorrer o erro. Nesse caso, o comando acima não irá 
+resolver o problema. Uma forma prática (mas nem sempre possível) de resolver o problema é excluíndo a base de dados e 
+então executar novamente as migrações desde o início.

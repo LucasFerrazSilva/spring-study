@@ -17,6 +17,7 @@ public class Doctor {
     private String name;
     private String email;
     private String crm;
+    private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Expertise expertise;
     @Embedded
@@ -26,6 +27,7 @@ public class Doctor {
         this.name = dto.name();
         this.email = dto.email();
         this.crm = dto.crm();
+        this.phoneNumber = dto.phoneNumber();
         this.expertise = dto.expertise();
         this.address = new Address(dto.address());
     }
