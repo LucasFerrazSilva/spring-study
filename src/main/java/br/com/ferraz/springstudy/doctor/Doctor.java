@@ -1,15 +1,32 @@
 package br.com.ferraz.springstudy.doctor;
 
 import br.com.ferraz.springstudy.address.Address;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+@NoArgsConstructor @AllArgsConstructor
+@Getter
+@EqualsAndHashCode(of="id")
+@ToString
+@Entity
+@Table(name="TB_DOCTORS")
 public class Doctor {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String email;
-    private Integer crm;
+    private String crm;
+    @Enumerated(EnumType.STRING)
     private Expertise expertise;
+    @Embedded
     private Address address;
 
+    public Doctor(DoctorDTO dto) {
+        this.name = dto.name();
+        this.email = dto.email();
+        this.crm = dto.crm();
+        this.expertise = dto.expertise();
+        this.address = new Address(dto.address());
+    }
 }

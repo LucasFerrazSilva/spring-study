@@ -1,11 +1,11 @@
 package br.com.ferraz.springstudy.doctor;
 
-import br.com.ferraz.springstudy.address.Address;
+import br.com.ferraz.springstudy.address.AddressDTO;
 
 public record DoctorDTO(
         String name,
         String email,
         String crm,
         Expertise expertise,
-        Address address
+        AddressDTO address
 ) {}

@@ -47,3 +47,134 @@ inicializada;
 * **create-drop**: além de fazer o que o _create_ já faz, ele também exclui as tabelas quando a aplicação é derrubada;
 * **validate**: simplesmente verifica se o mapeamento das entidades da aplicação está de acordo com a base de dados;
 * **none**: desliga a geração de _DDL_ do Spring.
+
+## Entidade
+
+Uma entidade é uma classe que representa uma tabela do banco de dados. Para definirmos uma classe como sendo uma 
+entidade, usamos a anotação **@Entity**. O Spring irá buscar no banco de dados uma tabela com o mesmo nome da classe. 
+Para informarmos que aquela entidade representa uma tabela com outro nome, usamos a anotação 
+**@Table(name="nome da tabela")**.
+
+```Java
+@Entity
+@Table(name="TB_DOCTORS")
+public class Doctor { ... }
+```
+
+### ID
+
+Toda entidade precisa ter um ID definido. Isso é feito usando a anotação **@Id** em um atributo da classe:
+
+```Java
+@Id
+private Long id;
+```
+
+#### @GeneratedValue
+
+Além disso, quando o id é gerado automaticamente pelo banco de dados, precisamos informar o Spring sobre isso usando a
+anotação **@GeneratedValue(strategy=GenerationType.X)**, onde X pode ser:
+
+* **AUTO**: o provedor de persistência escolhe a melhor estratégia de acordo com o banco de dados definido (valor padrão);
+* **IDENTITY**: o ID é gerado pela coluna de auto incremento do banco de dados (ex: MySQL);
+* **SEQUENCE**: o ID é gerado por uma _sequence_, que pode ser específica para aquela tabela ou geral para todas as 
+entidades;
+* **TABLE**: os IDs são baseados numa tabela que guarda os IDs gerados (essa opção é pouco recomendada).
+
+```Java
+@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+```
+
+### @Column
+
+O Spring irá utilizar algumas convensões para mapear automaticamente os atributos daquela entidade com as colunas no 
+banco de dados, por exemplo:
+
+* Irá buscar com o mesmo nome ignorando a capitalização (ex: street -> STREET)
+* Irá buscar o nome substituindo o _cammel case_ por _snake case_ (ex: zipCode -> ZIP_CODE)
+* Irá converter o tipo do Java por um similar do banco de dados (ex: String -> Varchar)
+
+Caso seja o caso de alguma dessas convensões não se aplicar, ou for necessário deixar explícito como uma coluna deve 
+estar, podemos usar a anotação **@Column**. As principais propriedades dessa anotação são:
+
+* **name**: define o nome da coluna
+* **updatable**: define se a coluna pode ser atualizada (true/false)
+* **insertable**: define se a coluna pode ser inicializada (true/false)
+* **length**: quantidade máxima de caracteres
+* **nullable**: define se a coluna pode estar vazia (true/false)
+* **columnDefinition**: a definição exata da coluna usando SQL (ex: VARCHAR(255) NOT NULL)
+* **unique**: se a coluna é uma chave única
+
+
+### @Embedded e @Embeddable
+
+Quando temos um conjunto de campos que é comum para mais de uma entidade, é uma boa prática extrair esses campos em uma
+classe _incorporável_ por outras.
+
+Essa classe que será utilizada pelas outras deve receber a anotação **@Embeddable**:
+
+```Java
+@Embeddable
+public record Address(String street, String neighborhood, String zipCode) {}
+```
+
+Para incorporar essa classe em outra, usamos a anotação @Embedded:
+
+```Java
+@Entity
+@Table(name="TB_DOCTORS")
+public class Doctor {
+    ...
+    @Embedded
+    private Address address;
+}
+```
+
+Se for necessário, podemos sobreescrever metadados sobre atributos da classe incorporada:
+
+```Java
+@Entity
+@Table(name="TB_DOCTORS")
+public class Doctor {
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name="zipCode", column=@Column(name="ZIP_CODE"))
+    })
+    private Address address;
+}
+```
+
+## Repository
+
+Para realizar as ações no banco de dados (como inserção, atualização, etc.) precisamos criar uma interface para cada 
+entidade que extende _JpaRepository_, especificando a entidade a que ela se refere e o tipo da coluna ID:
+
+```Java
+public interface DoctorRepository extends JpaRepository<Doctor, Long> {}
+```
+
+Essa interface pode então ser injetada pelo Spring:
+
+```Java
+import br.com.ferraz.springstudy.doctor.DoctorRepository;
+
+public class DoctorController {
+    private final DoctorRepository repository;
+
+    public DoctorController(DoctorRepository repository) {
+        this.repository = repository;
+    }
+}
+```
+
+Ela irá conter todas as interações mais comuns com o banco de dados (listagem, busca por ID, inserção, 
+deleção, etc.):
+
+```Java
+repository.save(entity); // Grava entidade no banco de dados
+repository.findAll(); // Busca todos os elementos da tabela
+repository.findById(id); // Busca elemento específico pelo ID
+repository.count(); // Conta quantidade de registros na tabela
+repository.delete(entity); // Remove entidade
+```
