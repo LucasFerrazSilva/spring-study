@@ -2,13 +2,16 @@ package br.com.ferraz.springstudy.controller;
 
 import br.com.ferraz.springstudy.doctor.Doctor;
 import br.com.ferraz.springstudy.doctor.DoctorDTO;
+import br.com.ferraz.springstudy.doctor.DoctorReadDTO;
 import br.com.ferraz.springstudy.doctor.DoctorRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,10 +33,16 @@ public class DoctorController {
     }
 
     @GetMapping
-    public String list() {
-        List<Doctor> doctors = repository.findAll();
-        String doctorsNames = String.join(", ", doctors.stream().map(doctor -> doctor.toString()).toList());
-        return String.format("Médicos: %s", doctorsNames);
+    public Page<DoctorReadDTO> list(@PageableDefault(sort="name", direction = Sort.Direction.ASC, size=10) Pageable pageable) {
+        Page<Doctor> doctors = repository.findAll(pageable);
+        Page<DoctorReadDTO> list = doctors.map(DoctorReadDTO::new);
+        return list;
     }
+
+//    @PutMapping("/{id}")
+//    @Transactional
+//    public String update(@RequestParam(name="id") Long id, @RequestBody @Valid DoctorDTO doctorDTO) {
+//        return String.format("Id: %d, Médico: %s", id, doctorDTO.name());
+//    }
 
 }

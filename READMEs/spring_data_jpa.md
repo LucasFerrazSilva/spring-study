@@ -201,3 +201,117 @@ public void add(@RequestBody Doctor doctor) {
     ...
 }
 ```
+
+## Paginação
+
+A paginação é uma parte fundamental da busca por elementos em aplicações reais, visto que a maior parte das bases de 
+dados contém uma grande quantidade de dados e retornar todos os dados sempre com certeza não seria uma boa ideia.
+
+O Spring disponibiliza as interfaces **Page** e **Pageable** que permitem a paginação de forma simples e prática.
+
+Por exemplo, o método _findAll_ possui uma sobrecarga que recebe um _pageable_ e retorna uma _Page<Entidade>_, que é
+similar à uma lista, mas com dados da paginação.
+
+### Pageable
+
+Precisamos receber um _Pageable_ nos métodos de listagem para que a paginação funcione. Os principais atributos desse
+pageable serão:
+
+* **size**: quantidade de registros por página;
+* **page**: página atual;
+* **sort**: coluna(s) que serão usadas para ordenação;
+* **direction**: se a ordenação será ascendente ou descendente.
+
+Exemplo de requisição utilizando os parâmetros de ordenação:
+
+```
+http://localhost:8080/medicos?size=1&page=1&sort=name,desc
+```
+
+Podemos trocar o nome desses parâmetros no _application.properties_:
+
+```
+spring.data.web.pageable.page-parameter=pagina
+spring.data.web.pageable.size-parameter=tamanho
+spring.data.web.sort.sort-parameter=ordem
+```
+
+A requisição então ficaria:
+
+```
+http://localhost:8080/medicos?tamanho=1&pagina=1&ordem=name,desc
+```
+
+### @PageableDefault
+
+É uma boa prática anotarmos os parâmetros _pageable_ com **@PageableDefault** para definirmos valores padrões, tornando
+opcional para a requisição informar os dados de paginação.
+
+```Java
+@GetMapping
+public Page<ObjectDTO> list(@PageableDefault(sort="name", direction = Sort.Direction.ASC, size=10) Pageable pageable) {
+    ...
+} 
+```
+
+### Page
+
+O Spring retorna das buscas paginadas uma **Page<Entidade>**, que é similar à uma List, mas com os dados da paginação
+inclusos.
+
+```JSON
+{
+    "content": [
+        {
+            "name": "Aline Cardoso",
+            "email": "aline.cardoso@mail.com",
+            "crm": "654321",
+            "expertise": "CARDIOLOGIA"
+        },
+        {
+            "name": "Rodrigo Ferreira",
+            "email": "rodrigo.ferreira@mail.com",
+            "crm": "123456",
+            "expertise": "ORTOPEDIA"
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "empty": false,
+            "sorted": true,
+            "unsorted": false
+        },
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 10,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 2,
+    "size": 10,
+    "number": 0,
+    "sort": {
+        "empty": false,
+        "sorted": true,
+        "unsorted": false
+    },
+    "first": true,
+    "numberOfElements": 2,
+    "empty": false
+}
+```
+
+#### Convertendo uma Page<Entidade> para uma Page<DTO>
+
+Uma forma bem simples de converter uma página de uma entidade para uma página de DTO é usando o método _map()_:
+
+```Java
+@GetMapping
+public Page<DoctorReadDTO> list(@PageableDefault(sort="name", direction = Sort.Direction.ASC, size=10) Pageable pageable) {
+    Page<Doctor> doctors = repository.findAll(pageable);
+    Page<DoctorReadDTO> list = doctors.map(DoctorReadDTO::new);
+    return list;
+}
+```
