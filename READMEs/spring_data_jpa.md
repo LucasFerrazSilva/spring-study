@@ -184,3 +184,20 @@ repository.findById(id); // Busca elemento específico pelo ID
 repository.count(); // Conta quantidade de registros na tabela
 repository.delete(entity); // Remove entidade
 ```
+
+### Transações
+
+Métodos que fazem operações de escrita no banco de dados precisam usar uma transação. Ela é importante pois, caso ocorra 
+algum erro durante o método, seja possível fazer o rollback dos passos anteriores, evitando que o banco fique num estado
+indesejado.
+
+Para que um método use uma transação, basta usar a anotação **@Transactional**:
+
+```Java
+
+@PostMapping
+@Transactional
+public void add(@RequestBody Doctor doctor) {
+    ...
+}
+```

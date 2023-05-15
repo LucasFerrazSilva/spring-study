@@ -1,2 +1,3 @@
+SELECT * FROM flyway_schema_history;
 SELECT * FROM TB_DOCTORS;
 DELETE FROM TB_DOCTORS;

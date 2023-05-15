@@ -3,6 +3,7 @@ package br.com.ferraz.springstudy.controller;
 import br.com.ferraz.springstudy.doctor.Doctor;
 import br.com.ferraz.springstudy.doctor.DoctorDTO;
 import br.com.ferraz.springstudy.doctor.DoctorRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class DoctorController {
     }
 
     @PostMapping
+    @Transactional
     public String add(@RequestBody DoctorDTO doctorDTO) {
         Doctor doctor = new Doctor(doctorDTO);
         repository.save(doctor);
