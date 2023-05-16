@@ -26,4 +26,27 @@ public class Address {
         this.number = dto.number();
         this.complement = dto.complement();
     }
+
+    public void update(AddressDTO dto) {
+        if (dto.street() != null)
+            this.street = dto.street();
+
+        if (dto.neighborhood() != null)
+            this.neighborhood = dto.neighborhood();
+
+        if (dto.zipCode() != null)
+            this.zipCode = dto.zipCode();
+
+        if (dto.city() != null)
+            this.city = dto.city();
+
+        if (dto.state() != null)
+            this.state = dto.state();
+
+        if (dto.number() != null)
+            this.number = dto.number();
+
+        if (dto.complement() != null)
+            this.complement = dto.complement();
+    }
 }

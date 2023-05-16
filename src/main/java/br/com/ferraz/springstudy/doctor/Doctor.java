@@ -31,4 +31,15 @@ public class Doctor {
         this.expertise = dto.expertise();
         this.address = new Address(dto.address());
     }
+
+    public void update(DoctorUpdateDTO dto) {
+        if (dto.name() != null)
+            this.name = dto.name();
+
+        if (dto.phoneNumber() != null)
+            this.phoneNumber = dto.phoneNumber();
+
+        if (dto.address() != null)
+            this.address.update(dto.address());
+    }
 }

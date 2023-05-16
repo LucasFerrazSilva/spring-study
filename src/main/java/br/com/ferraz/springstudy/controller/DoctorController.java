@@ -1,9 +1,6 @@
 package br.com.ferraz.springstudy.controller;
 
-import br.com.ferraz.springstudy.doctor.Doctor;
-import br.com.ferraz.springstudy.doctor.DoctorCreateDTO;
-import br.com.ferraz.springstudy.doctor.DoctorReadDTO;
-import br.com.ferraz.springstudy.doctor.DoctorRepository;
+import br.com.ferraz.springstudy.doctor.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -37,10 +34,12 @@ public class DoctorController {
         return list;
     }
 
-//    @PutMapping
-//    @Transactional
-//    public String update(@RequestBody DoctorDTO doctorDTO) {
-//        return String.format("Id: %d, Médico: %s", id, doctorDTO.name());
-//    }
+    @PutMapping
+    @Transactional
+    public String update(@RequestBody @Valid DoctorUpdateDTO doctorDTO) {
+        Doctor doctor = repository.getReferenceById(doctorDTO.id());
+        doctor.update(doctorDTO);
+        return String.format("Médico %s atualizado.", doctor.getName());
+    }
 
 }
