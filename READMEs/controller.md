@@ -115,3 +115,35 @@ existente. A diferença entre as duas é realmente pequena: o PUT tem como final
 alteração partical do elemento (somente alguns atributos). Porém, nem sempre é possível saber com certeza quantos campos
 serão de fato alterados, por isso, é mais comum que o método PUT seja sempre utilizado quando estamos atualizando um 
 elemento.
+
+## Retorno Correto da API
+
+Quando nossa API responde uma requisição, a resposta deve estar de acordo com a situação.
+
+Alguns exemplos de códigos HTTP e quando devem ser utilizados:
+
+* **500 (Internal Server Error)**: ocorreu algum erro interno da aplicação durante a execução da requisição;
+* **404 (Not Found)**: o recurso solicitado não foi encontrado;
+* **200 (Ok)**: a requisição foi executada corretamente;
+* **201 (Created)**: a requisição foi executada corretamente e um novo recurso foi criado;
+* **204 (No Content)**: a requisição foi executada corretamente, mas nenhum conteúdo precisa ser retornado como 
+resposta.
+
+Para uma lista completa de todos os códigos de status HTTP, veja 
+[esse artigo](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status).
+
+### ResponseEntity
+
+No Spring, ao invés do método retornar uma simples String, ou uma listagem, o recomendo é retornar um 
+**ResponseEntity**, que irá conter o conteúdo do retorno e também o código HTTP correto. O Spring disponibiliza 
+diversos métodos estáticos com os principais retornos (_ok(), notFound(), badRequest()_, etc.)
+
+```Java
+@DeleteMapping("/{id}")
+@Transactional
+public ResponseEntity delete(@PathVariable(name="id") Long id) {
+    Doctor doctor = repository.getReferenceById(id);
+    doctor.inactivate();
+    return ResponseEntity.noContent().build();
+}
+```

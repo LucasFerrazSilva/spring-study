@@ -7,7 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/medicos")
@@ -21,33 +25,34 @@ public class DoctorController {
 
     @PostMapping
     @Transactional
-    public String add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO) {
+    public ResponseEntity add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO) {
         Doctor doctor = new Doctor(doctorCreateDTO);
         repository.save(doctor);
-        return String.format("Médico %s adicionado com sucesso!", doctor.getName());
+        return ResponseEntity.created(URI.create("/medicos/" + doctor.getId())).build();
     }
 
     @GetMapping
-    public Page<DoctorReadDTO> list(@PageableDefault(sort="name", direction = Sort.Direction.ASC, size=10) Pageable pageable) {
+    public ResponseEntity<Page<DoctorReadDTO>> list(@PageableDefault(sort="name", direction = Sort.Direction.ASC, size=10) Pageable pageable) {
         Page<Doctor> doctors = repository.findAllByActiveIsTrue(pageable);
         Page<DoctorReadDTO> list = doctors.map(DoctorReadDTO::new);
-        return list;
+        return ResponseEntity.ok(list);
     }
 
     @PutMapping
     @Transactional
-    public String update(@RequestBody @Valid DoctorUpdateDTO doctorDTO) {
+    public ResponseEntity update(@RequestBody @Valid DoctorUpdateDTO doctorDTO) {
         Doctor doctor = repository.getReferenceById(doctorDTO.id());
         doctor.update(doctorDTO);
-        return String.format("Médico %s atualizado.", doctor.getName());
+        DoctorInfosDTO doctorInfosDTO = new DoctorInfosDTO(doctor);
+        return ResponseEntity.ok(doctorInfosDTO);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public String delete(@PathVariable(name="id") Long id) {
+    public ResponseEntity delete(@PathVariable(name="id") Long id) {
         Doctor doctor = repository.getReferenceById(id);
         doctor.inactivate();
-        return String.format("Médico %s excluído.", doctor.getName());
+        return ResponseEntity.noContent().build();
     }
 
 }
