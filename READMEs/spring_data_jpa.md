@@ -202,6 +202,116 @@ public void add(@RequestBody Doctor doctor) {
 }
 ```
 
+### Derived Query Methods
+
+Além dos diversos métodos que o Spring disponibiliza por padrão para as interfaces _Repository_, podemos criar queries
+customizadas facilmente usando as _Derived Query_.
+
+Por exemplo, caso seja necessário criar uma busca pelo nome da entidade:
+
+```Java
+List<Entidade> findByName(String name);
+```
+
+Para isso, só precisamos criar um método na interface que siga as seguintes regras:
+
+#### Introducer
+
+A primeira parte do nome do método (antes do _By_) é o _introducer_, ou seja, define como será realizada a pesquisa. O método pode 
+começar com _find, query, read, count e get_. Podemos ainda usar _Distinct, First e Top_ para remover registros 
+duplicados ou limitar a quantidade de resultados.
+
+```Java
+List<Entidade> findByName(String name);
+List<Entidade> findTop3ByName(String name);
+List<Entidade> queryDistinctByName(String name);
+List<Entidade> readByName(String name);
+List<Entidade> countByName(String name);
+List<Entidade> getFirstByName(String name);
+```
+
+#### Criteria
+
+A segunda parte (após o _By_) é a _criteria_, que define as condições da busca (os campos que serão considerados). 
+Podemos simplesmente informar o nome do campo, ou então adicionar _Is_ ou _Equals_ após eles para melhorar a 
+redibilidade do código:
+
+```Java
+List<Doctor> findByName(String name);
+List<Doctor> findByNameIs(String name);
+List<Doctor> findByNameEquals(String name);
+```
+
+Para buscar para casos onde seja **diferente**:
+
+```Java
+List<Doctor> findByNameIsNot(String name);
+```
+
+Para buscar por campos nulos/não nulos ou booleanos, temos formas ainda mais simples:
+
+```Java
+List<Doctor> findByNameIsNull();
+List<Doctor> findByNameIsNotNull();
+List<Doctor> findByActiveIsTrue();
+List<Doctor> findByNameIsFalse();
+```
+
+Podemos ainda concatenar mais de um atributo para especificar mais a busca:
+
+```Java
+List<Doctor> findByNameOrEmail(String name, String email);
+List<Doctor> findByNameAndEmailIsNotNull(String name);
+```
+
+Podemos buscar também por similaridade ou verificando um trecho do campo:
+
+```Java
+List<Entidade> findByNameStartingWith(String namePrefix);
+List<Entidade> findByNameEndingWith(String nameSuffix);
+List<Entidade> findByNameContaining(String nameInfix);
+```
+
+Caso seja necessário uma forma mais específica de busca por similaridade, podemos usar o _like_:
+
+```Java
+List<Entidade> findByNameLike(String likePattern);
+...
+repository.findByNameLike("a%b%c");
+```
+
+Para filtrar usando _comparação_, temos:
+
+```Java
+List<Entidade> findByAgeLessThan(Integer age);
+List<Entidade> findByAgeLessThanEqual(Integer age);
+List<Entidade> findByAgeGreaterThan(Integer age);
+List<Entidade> findByAgeGreaterThanEqual(Integer age);
+List<Entidade> findByAgeBetween(Integer startAge, endAge);
+List<Entidade> findByAgeIn(Collection<Integer> ages);
+```
+
+Para compara por data, podemos usar o _Before_ e o _After_:
+
+```Java
+List<Entidade> findByBirthDateBefore(ZonedDateTime birthDate);
+List<Entidade> findByBirthDateAfter(ZonedDateTime birthDate);
+```
+
+Por fim, podemos ainda definir a **ordenação** dos elementos usando o _OrderBy_:
+
+```Java
+List<Entidade> findByNameOrderByName(String name);
+List<Entidade> findByNameOrderByNameAsc(String name);
+List<Entidade> findByNameOrderByNameDesc(String name);
+```
+
+Caso seja necessário retornar uma _Page_ ao invés de uma _List_, basta receber um _Pageable_ como último parâmetro:
+
+```Java
+List<Entidade> findByNameOrderByName(String name, Pageable pageable);
+```
+
 ## Paginação
 
 A paginação é uma parte fundamental da busca por elementos em aplicações reais, visto que a maior parte das bases de 

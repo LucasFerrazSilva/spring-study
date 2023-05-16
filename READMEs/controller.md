@@ -39,7 +39,21 @@ formatada (como um JSON ou XML).
 * **@RequestMapping("url")**: mapeamento somente da URL, sem especificar o método HTTP. Pode ser usada na classe para
   definir uma URL base para todos os métodos da mesma;
 * **@RequestBody DTO obj**: indica ao Spring que o _objeto_ deve ser preenchido com os dados presentes no corpo da 
-requisição.  
+requisição.
+
+## @PathVariable
+
+Quando trabalhamos com um elemento específico, é comum que seja passado na URL o ID do elemento. Esse ID então se torna
+uma _variável de caminho_ (_Path Variable_). Para obtermos essa variável, basta receber um parâmetro no método e 
+anotá-lo com **@PathVariable**:
+
+```Java
+@DeleteMapping("/{id}")
+@Transactional
+public String delete(@PathVariable(name="id") Long id) {
+    ...
+}
+```
 
 ## Data Transfer Object (DTO)
 

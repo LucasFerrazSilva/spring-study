@@ -22,6 +22,8 @@ public class Doctor {
     private Expertise expertise;
     @Embedded
     private Address address;
+    @Column(nullable = false, columnDefinition = "TINYINT")
+    private Boolean active;
 
     public Doctor(DoctorCreateDTO dto) {
         this.name = dto.name();
@@ -30,6 +32,7 @@ public class Doctor {
         this.phoneNumber = dto.phoneNumber();
         this.expertise = dto.expertise();
         this.address = new Address(dto.address());
+        this.active = true;
     }
 
     public void update(DoctorUpdateDTO dto) {
@@ -41,5 +44,9 @@ public class Doctor {
 
         if (dto.address() != null)
             this.address.update(dto.address());
+    }
+
+    public void inactivate() {
+        this.active = false;
     }
 }

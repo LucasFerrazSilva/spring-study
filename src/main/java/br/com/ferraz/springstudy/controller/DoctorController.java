@@ -29,7 +29,7 @@ public class DoctorController {
 
     @GetMapping
     public Page<DoctorReadDTO> list(@PageableDefault(sort="name", direction = Sort.Direction.ASC, size=10) Pageable pageable) {
-        Page<Doctor> doctors = repository.findAll(pageable);
+        Page<Doctor> doctors = repository.findAllByActiveIsTrue(pageable);
         Page<DoctorReadDTO> list = doctors.map(DoctorReadDTO::new);
         return list;
     }
@@ -40,6 +40,14 @@ public class DoctorController {
         Doctor doctor = repository.getReferenceById(doctorDTO.id());
         doctor.update(doctorDTO);
         return String.format("Médico %s atualizado.", doctor.getName());
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public String delete(@PathVariable(name="id") Long id) {
+        Doctor doctor = repository.getReferenceById(id);
+        doctor.inactivate();
+        return String.format("Médico %s excluído.", doctor.getName());
     }
 
 }
