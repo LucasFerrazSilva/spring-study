@@ -10,6 +10,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
@@ -25,10 +27,14 @@ public class DoctorController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO) {
+    public ResponseEntity add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO, UriComponentsBuilder uriBuilder) {
         Doctor doctor = new Doctor(doctorCreateDTO);
         repository.save(doctor);
-        return ResponseEntity.created(URI.create("/medicos/" + doctor.getId())).build();
+
+        URI uri = uriBuilder.path("/medicos/{id}").buildAndExpand(doctor.getId()).toUri();
+        DoctorInfosDTO dto = new DoctorInfosDTO(doctor);
+
+        return ResponseEntity.created(uri).body(dto);
     }
 
     @GetMapping
@@ -36,6 +42,13 @@ public class DoctorController {
         Page<Doctor> doctors = repository.findAllByActiveIsTrue(pageable);
         Page<DoctorReadDTO> list = doctors.map(DoctorReadDTO::new);
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DoctorInfosDTO> get(@PathVariable Long id) {
+        Doctor doctor = repository.getReferenceById(id);
+        DoctorInfosDTO doctorInfosDTO = new DoctorInfosDTO(doctor);
+        return ResponseEntity.ok(doctorInfosDTO);
     }
 
     @PutMapping

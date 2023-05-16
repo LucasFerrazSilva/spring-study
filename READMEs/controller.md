@@ -120,6 +120,15 @@ elemento.
 
 Quando nossa API responde uma requisição, a resposta deve estar de acordo com a situação.
 
+Existem diversos códigos HTTP que podem ser utilizados. Esses códigos são agrupados em categorias, que são 
+identificadas pelo primeiro número do código:
+
+* **1XX**: informação. A requisição foi aceita ou está em andamento;
+* **2XX**: confirmação. A ação foi concluída ou entendida;
+* **3XX**: redirecionamento. Indica que algo mais foi feito para conclusão da solicitação;
+* **4XX**: erro do cliente/requisição. Existe algum problema com a solicitação;
+* **5XX**: erro no servidor. O servidor não conseguiu processar a solicitação.
+
 Alguns exemplos de códigos HTTP e quando devem ser utilizados:
 
 * **500 (Internal Server Error)**: ocorreu algum erro interno da aplicação durante a execução da requisição;
@@ -145,5 +154,38 @@ public ResponseEntity delete(@PathVariable(name="id") Long id) {
     Doctor doctor = repository.getReferenceById(id);
     doctor.inactivate();
     return ResponseEntity.noContent().build();
+}
+```
+
+#### created()
+
+Quando um recurso é criado, é esperado que o retorno seja um 201 (Created). O detalhe é que esse retorno espera duas 
+coisas:
+
+* Uma URI do recurso (ou seja, a URI de um endpoint que permita acessar esse recurso)
+* A representação do novo recurso criado
+
+Para criar a URI, podemos usar a classe do Spring **UriComponentsBuilder** (que pode ser injetada pelo Spring)
+e então usar os métodos _path()_, _buildAndExpand()_ e _toURI()_ para gerar a URI:
+
+```Java
+URI uri = uriBuilder.path("/medicos/{id}").buildAndExpand(doctor.getId()).toUri();
+```
+
+A representação do recurso deve ser passada para o _ResponseEntity_ usando o método _body()_.
+
+Exemplo de um endpoint que adiciona um novo médico:
+
+```Java
+@PostMapping
+@Transactional
+public ResponseEntity add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO, UriComponentsBuilder uriBuilder) {
+    Doctor doctor = new Doctor(doctorCreateDTO);
+    repository.save(doctor);
+
+    URI uri = uriBuilder.path("/medicos/{id}").buildAndExpand(doctor.getId()).toUri();
+    DoctorInfosDTO dto = new DoctorInfosDTO(doctor);
+
+    return ResponseEntity.created(uri).body(dto);
 }
 ```
