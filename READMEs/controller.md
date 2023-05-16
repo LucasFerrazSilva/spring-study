@@ -58,3 +58,46 @@ toString, etc.:
 ```Java
 public record ObjectDTO (String field1, Integer field2, AnotherObject anotherObject) {}
 ```
+
+### Mass Assignment Attack
+
+O padrão DTO é fundamental para evitar o **Mass Assignment Attack**, que consiste no usuário malicioso enviar uma 
+requisição alterando um campo que não deveria ser alterado.
+
+Vamos considerar uma classe Usuário, que contém o atributo booleano _admin_:
+
+```Java
+public class Usuario {
+    private String nome;
+    private String email;
+    private boolean admin;
+    
+    ...
+  
+    public void setAsAdmin() {
+        this.admin = true;
+    }
+}
+```
+
+Esse atributo teoricamente só deveria ser alterado com uma chamada específica, mas, no endpoint de atualização de dados 
+básicos (como nome, email, etc.), o usuário passa também o campo admin:
+
+```JSON
+{
+  "nome": "José Silva",
+  "admin": true
+}
+```
+
+Como estamos trabalhando diretamente com o objeto, essa requisição irá alterar atributos que não deveria. Por isso, 
+utilizar um DTO sem o campo admin seria a melhor opção.
+
+## PUT x PATCH
+
+Uma dúvida comum é quando utilizar requisições PUT ou PATCH, visto que ambas lidam com a atualização de um elemento 
+existente. A diferença entre as duas é realmente pequena: o PUT tem como finalidade a atualização total de um elemento
+(ou seja, a modificação de todos os atributos do mesmo), enquanto o PATCH deve ser utilizado quando queremos fazer uma 
+alteração partical do elemento (somente alguns atributos). Porém, nem sempre é possível saber com certeza quantos campos
+serão de fato alterados, por isso, é mais comum que o método PUT seja sempre utilizado quando estamos atualizando um 
+elemento.
