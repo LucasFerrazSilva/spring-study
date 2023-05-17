@@ -1,6 +1,6 @@
-package br.com.ferraz.springstudy.doctor;
+package br.com.ferraz.springstudy.domain.doctor;
 
-import br.com.ferraz.springstudy.address.Address;
+import br.com.ferraz.springstudy.domain.address.Address;
 
 public record DoctorInfosDTO(
         Long id,

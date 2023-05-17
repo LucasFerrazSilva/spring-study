@@ -189,3 +189,30 @@ public ResponseEntity add(@RequestBody @Valid DoctorCreateDTO doctorCreateDTO, U
     return ResponseEntity.created(uri).body(dto);
 }
 ```
+
+## Lidando com erros na API
+
+É uma boa prática tentar retornar mensagens de erros claras e com somente as informações necessárias.
+
+A primeira boa prática é dizer para o Spring não enviar o _stack trace_ nas mensagens de erro. Para isso, basta 
+alterar a propriedade:
+
+    server.error.include-stacktrace=never
+
+Outra boa prática é criar uma classe que será responsável por tratar erros comuns, como recursos não encontrados, etc.
+
+Essa classe deve conter a anotação **@RestControllerAdvice**. Dentro da classe, devemos criar um método específico 
+para cada exceção. Para definir a exceção que um método irá tratar, usamos a anotação **@ExceptionHandler()**, passando
+a exceção em questão como argumento.
+
+Por exemplo, para lidar com casos de entidade não encontrada (_EntityNotFoundException_):
+
+```Java
+@RestControllerAdvice
+public class ExceptionsHandler {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity handleError404() {
+      return ResponseEntity.notFound().build();
+    }
+}
+```

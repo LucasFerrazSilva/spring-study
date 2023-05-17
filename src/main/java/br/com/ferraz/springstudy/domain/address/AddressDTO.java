@@ -1,4 +1,4 @@
-package br.com.ferraz.springstudy.address;
+package br.com.ferraz.springstudy.domain.address;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

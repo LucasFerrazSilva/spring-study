@@ -163,7 +163,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {}
 Essa interface pode então ser injetada pelo Spring:
 
 ```Java
-import br.com.ferraz.springstudy.doctor.DoctorRepository;
+import br.com.ferraz.springstudy.domain.doctor.DoctorRepository;
 
 public class DoctorController {
     private final DoctorRepository repository;

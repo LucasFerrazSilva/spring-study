@@ -1,4 +1,4 @@
-package br.com.ferraz.springstudy.doctor;
+package br.com.ferraz.springstudy.domain.doctor;
 
 public enum Expertise {
 

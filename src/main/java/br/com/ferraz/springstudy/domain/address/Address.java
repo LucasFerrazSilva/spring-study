@@ -1,4 +1,4 @@
-package br.com.ferraz.springstudy.address;
+package br.com.ferraz.springstudy.domain.address;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

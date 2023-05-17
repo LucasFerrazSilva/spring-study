@@ -1,6 +1,6 @@
-package br.com.ferraz.springstudy.doctor;
+package br.com.ferraz.springstudy.domain.doctor;
 
-import br.com.ferraz.springstudy.address.AddressDTO;
+import br.com.ferraz.springstudy.domain.address.AddressDTO;
 import jakarta.validation.constraints.NotNull;
 
 public record DoctorUpdateDTO(
