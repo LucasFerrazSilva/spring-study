@@ -6,16 +6,16 @@ responsável por uma URL/método HTTP usando a respectiva anotação + URL.
 
 Exemplo:
 
-    @Controller
-    public class HelloWorldController {
-    
-        @GetMapping("/hello-world")
-        @ResponseBody
-        public String helloWorld() {
-            return "Hello, world!";
-        }
-    
+```Java
+@Controller
+public class HelloWorldController {
+    @GetMapping("/hello-world")
+    @ResponseBody
+    public String helloWorld() {
+        return "Hello, world!";
     }
+}
+```
 
 No exemplo acima, o método _helloWorld()_ é responsável por receber requisições do tipo GET para a URL "/hello-world"
 (_@GetMapping("/hello-world")_) e respondê-la com um texto simples (return "Hello, world!"). Vale ressaltar que se for

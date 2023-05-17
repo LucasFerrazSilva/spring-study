@@ -110,3 +110,9 @@ Para mais informações, veja [esse README](READMEs/flyway.md).
 O Spring Validation é a biblioteca que adiciona diversas anotações úteis que auxiliam na validação dos dados recebidos.
 
 Para mais informações, veja [esse README](READMEs/validation.md).
+
+## Spring Secutiry
+
+O **Spring Security** é o módulo do Spring Framework responsável por tratar da segurança das aplicações.
+
+Para mais informações, veja [esse README](READMEs/security.md).

@@ -1,4 +1,4 @@
-package br.com.ferraz.springstudy.infra;
+package br.com.ferraz.springstudy.infra.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;

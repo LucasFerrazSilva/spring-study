@@ -4,12 +4,13 @@ import br.com.ferraz.springstudy.domain.address.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+@Entity
+@Table(name="TB_DOCTORS")
 @NoArgsConstructor @AllArgsConstructor
 @Getter
 @EqualsAndHashCode(of="id")
 @ToString
-@Entity
-@Table(name="TB_DOCTORS")
 public class Doctor {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
