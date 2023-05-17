@@ -205,7 +205,9 @@ Essa classe deve conter a anotação **@RestControllerAdvice**. Dentro da classe
 para cada exceção. Para definir a exceção que um método irá tratar, usamos a anotação **@ExceptionHandler()**, passando
 a exceção em questão como argumento.
 
-Por exemplo, para lidar com casos de entidade não encontrada (_EntityNotFoundException_):
+### EntityNotFoundException
+
+A classe **EntityNotFoundException** representa o famoso erro 404 (Not Found):
 
 ```Java
 @RestControllerAdvice
@@ -216,3 +218,28 @@ public class ExceptionsHandler {
     }
 }
 ```
+
+### MethodArgumentNotValidException
+
+Para tratar erros de validação, ou seja, quando os valores enviados não estão no padrão esperado (_404 - Bad Request_), 
+usamos a classe _MethodArgumentNotValidException_:
+
+```Java
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity handleError400(MethodArgumentNotValidException exception) {
+    List<FieldError> errors = exception.getFieldErrors();
+
+    List<ValidationExceptionDataDTO> errorsDTO = errors.stream().map(ValidationExceptionDataDTO::new).toList();
+
+    return ResponseEntity.badRequest().body(errorsDTO);
+}
+
+private record ValidationExceptionDataDTO(String field, String message){
+    public ValidationExceptionDataDTO(FieldError error){
+        this(error.getField(), error.getDefaultMessage());
+    }
+}
+```
+
+Note que recebemos a exceção lançada como argumento no método. Isso é importante para quando precisamos de detalhes 
+sobre o que levou a exceção a ser lançada.

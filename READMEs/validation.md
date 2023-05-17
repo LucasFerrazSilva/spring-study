@@ -15,13 +15,34 @@ Principais anotações:
 _@Pattern(regexp="\\d{4,6}")_ -> Verifica se o campo possui de 4 a 6 dígitos)
 * **@Valid**: solicita ao Spring Validation que verifique se os campos do objeto são validos
 
-Podemos passar para essas anotações a propriedade **message**, que define uma mensagem de erro customizada caso a 
-validação não seja atendida.
-
 Vale ressaltar que, para o Spring Validation validar um objeto, precisamos anotá-lo com **@Valid**.
 
 Para verificar todas as anotações disponíveis, veja a 
 [documentação oficial](https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html#builtinconstraints).
+
+## Mensagens de erro customizadas
+
+Podemos passar para as anotações a propriedade **message**, que define uma mensagem de erro customizada caso a
+validação não seja atendida:
+
+```Java
+@NotBlank(message="O nome não pode estar vazio.")
+String name
+```
+
+Outra forma de fazer isso é criando um arquivo **ValidationMessages.properties** dentro de _src/main/resources_ e
+inserindo no arquivo as mensagens no formato chave=valor:
+
+```
+name.required=O nome não pode estar vazio.
+```
+
+E então usando a chave entre {} no atributo _message_:
+
+```Java
+@NotBlank(message="{name.required}")
+String name
+```
 
 ## Erro
 
@@ -67,3 +88,5 @@ Exemplo:
     "path": "/medicos"
 }
 ```
+
+Para mais detalhes sobre tratamento de erros, veja [esse techo do README sobre Controllers](controller.md#lidando-com-erros-na-api).
