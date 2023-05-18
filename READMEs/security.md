@@ -437,3 +437,36 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws
 }
 ```
 
+Agora podemos definir os níveis de **autorização** usando as _roles_ dos usuários autenticados usando o método 
+_hasRole()_:
+
+```Java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http.csrf().disable()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and().authorizeHttpRequests()
+        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/medicos").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/pacientes").hasRole("ADMIN")
+        .anyRequest().authenticated()
+        .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
+}
+```
+
+Ou ainda, podemos anotar os métodos desses endpoints com a anotação **@Secured("ROLE_X")**:
+
+```Java
+@GetMapping("/{id}")
+@Secured("ROLE_ADMIN")
+public ResponseEntity detalhar(@PathVariable Long id) {
+    var medico = repository.getReferenceById(id);
+    return ResponseEntity.ok(new DadosDetalhamentoMedico(medico));
+}
+```
+
+Essa anotação também pode ser anotada na classe, fazendo com que seja aplicada em todos os métodos da mesma.
+
+**Observação**: para que seja possível usar essas anotações, precisamos adicionar a anotação 
+**@EnableMethodSecurity(securedEnabled = true)** na classe _SecurityConfigurations_.
