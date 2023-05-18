@@ -286,6 +286,8 @@ bibliotecas para diversas linguagens diferentes. Iremos usar a [biblioteca da au
 </dependency>
 ```
 
+### Geração do token após autenticação por usuario/senha
+
 Para gerarmos os tokens, primeiro precisamos criar uma _secret key_ da aplicação. Ela será usada para encriptar o token 
 para garantir que um agente malicioso que intercepte os dados da requisição não descubra os dados do usuário. 
 
@@ -345,3 +347,93 @@ public ResponseEntity login(@RequestBody @Valid AuthenticationDTO authentication
     return ResponseEntity.ok(tokenDTO);
 } 
 ```
+
+Agora, quando fazemos uma requisição para _/login_ passando um email/senha correto (exemplo):
+
+```JSON
+{
+    "login": "ana.souza@mail.com",
+    "password": "123456"
+}
+```
+
+Teremos a seguinte resposta:
+
+```JSON
+{
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmEuc291emFAbWFpbC5jb20iLCJpc3MiOiJTcHJpbmcgU3R1ZHkiLCJpZCI6MSwiZXhwIjoxNjg0NDI1OTQzfQ.dhyOMuNWglUYVfQasTSOdMpZs74puraLnH-HrfVpkNg"
+}
+```
+
+### Validando o token e usando-o para autenticação do usuário
+
+Agora que nossa rotina de geração de token está funcionando, precisamos ajustar a aplicação para usá-los como forma 
+de autenticação dos usuários.
+
+Primeiro, vamos adicionar um método no _TokenService_ que valide e extraia o _subject_ do token:
+
+```Java
+public String extractSubject(String token) {
+    try {
+        var algorithm = Algorithm.HMAC256(secret);
+        var verifier = JWT.require(algorithm)
+                        .withIssuer("Spring Study")
+                        .build();
+        var decodedJWT = verifier.verify(token); // Valida o token
+
+        return decodedJWT.getSubject(); // Pega o subject
+    } catch (JWTVerificationException exception) {
+        throw new RuntimeException("Token JWT inválido ou expirado!");
+    }
+}
+```
+
+Depois, vamos criar um **Filter** que irá interceptar as requisições antes delas serem processadas pelo Spring para 
+verificar se o token foi enviado, validá-lo e informar ao Spring que foi feita a autenticação do usuário. Essa classe 
+precisa ser anotada com _@Component_ e extender a classe _OncePerRequestFilter_ para que o Spring saiba que se trata 
+de um _filter_.
+
+```Java
+@Component
+public class SecurityFilter extends OncePerRequestFilter {
+
+    private TokenService tokenService;
+    private UserRepository userRepository;
+
+    public SecurityFilter(TokenService tokenService, UserRepository userRepository) {
+        this.tokenService = tokenService;
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String token = request.getHeader("Authorization"); // Pega o token do cabeçalho da requisição
+        if (token != null) {
+            var subject = tokenService.extractSubject(token.replace("Bearer ", ""));
+            var user = userRepository.findByLogin(subject);
+            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication); // Autentica o usuário no Spring
+        }
+
+        filterChain.doFilter(request, response);  // Continua a execução. Se não chamar, a requisição é interrompida e é enviada uma resposta 200 pro usuário
+    }
+}
+```
+
+Por fim, precisamos informar o Spring que esse filtro deve ser feito antes do seu próprio filtro para que ele não
+barre as requisições antes de validarmos o token:
+
+```Java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    return httpSecurity
+            .csrf().disable() // Não é necessário quando utilizamos token
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Desabilita a criação de sessões
+            .and().authorizeHttpRequests() // Informa que iremos personalidar as autorizações das requisições
+            .requestMatchers(HttpMethod.POST, "/login").permitAll() // Define que qualquer um pode acessar o endpoint /login
+            .anyRequest().authenticated() // Exige autorização dos demais endpoints
+            .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) // Coloca a nossa classe filter antes da própria classe do Spring
+            .build();
+}
+```
+

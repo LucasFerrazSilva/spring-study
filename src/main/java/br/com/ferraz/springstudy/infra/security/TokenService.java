@@ -4,13 +4,13 @@ import br.com.ferraz.springstudy.domain.user.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 
 @Service
 public class TokenService {
@@ -30,6 +30,20 @@ public class TokenService {
             return token;
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar um JWT", exception);
+        }
+    }
+
+    public String extractSubject(String token) {
+        try {
+            var algorithm = Algorithm.HMAC256(secret);
+            var verifier = JWT.require(algorithm)
+                            .withIssuer("Spring Study")
+                            .build();
+            var decodedJWT = verifier.verify(token); // Valida o token
+
+            return decodedJWT.getSubject(); // Pega o subject
+        } catch (JWTVerificationException exception) {
+            throw new RuntimeException("Token JWT inválido ou expirado!");
         }
     }
 
