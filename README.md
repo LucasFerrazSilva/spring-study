@@ -43,12 +43,14 @@ Para mais informações, veja [esse README](READMEs/spring_initializr.md).
 Ao analisar o *pom.xml* gerado pelo *Spring Initializr*, vemos que não temos uma dependência do Spring Boot. Isso porque
 ele é o *parent* da nossa aplicação, ou seja, nosso projeto herda as configurações do Spring Boot.
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
-	</parent>
+```XML
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.0.6</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+```
 
 ## SpringBootApplication
 
@@ -56,12 +58,14 @@ Para inicializarmos uma aplicação usando o Spring Boot, basta executar a class
 _@SpringBootApplication_ e contenha um método _main_ que chame
 _SpringApplication.run(NomeDaClasseApplication.class, args)_:
 
-    @SpringBootApplication
-    public class SpringStudyApplication {    
-        public static void main(String[] args) {
-            SpringApplication.run(SpringStudyApplication.class, args);
-        }    
-    }
+```Java
+@SpringBootApplication
+public class SpringStudyApplication {    
+    public static void main(String[] args) {
+        SpringApplication.run(SpringStudyApplication.class, args);
+    }    
+}
+```
 
 ## Controllers
 
@@ -71,16 +75,17 @@ responsável por uma URL/método HTTP usando a respectiva anotação + URL.
 
 Exemplo:
 
-    @Controller
-    public class HelloWorldController {
-    
-        @GetMapping("/hello-world")
-        @ResponseBody
-        public String helloWorld() {
-            return "Hello, world!";
-        }
-    
+```Java
+@Controller
+public class HelloWorldController {
+
+    @GetMapping("/hello-world")
+    @ResponseBody
+    public String helloWorld() {
+        return "Hello, world!";
     }
+}
+```
 
 Para mais informações, veja o README específico sobre controllers [aqui](READMEs/controller.md).
 

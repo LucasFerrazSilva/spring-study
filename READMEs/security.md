@@ -75,6 +75,9 @@ de sessões pode se tornar um desafio.
 
 ### Autenticação por token
 
+Um token nada mais é do que um texto que representa, de maneira segura, informações que serão compartilhadas entre dois
+sistemas. No caso de autenticação, o token irá conter dados do usuário autenticado.
+
 O usuário fará o processo de autenticação uma vez e receberá um _token_ que irá identificar a autenticação daquele 
 usuário. Cada nova requisição deverá enviar o token no cabeçalho para garantir que aquele usuário está autenticado. 
 Esse token tem um tempo de vida útil geralmente curto (por volta de 10 minutos), após isso, ele expira e é necessário 
@@ -89,7 +92,25 @@ Onde _TOKEN_JWT_ é o token gerado.
 O processo de autorização ocorrerá a seguir: a cada processamento de requisição, a aplicação deverá verificar se aquele
 usuário (identificado pelo token) tem autorização para acessar aquele endpoint/recurso.
 
-Uma das principais formas de se trabalhar usando tokens é utilizando o padrão **JWT (JSON Web Token)**.
+Uma das principais formas de se trabalhar usando tokens é utilizando o padrão **JWT (JSON Web Token)**. 
+
+Um JWT é composto por:
+
+* **header**: cabeçalho do token que contém o _alg_ (algoritmo usado para criar a assinatura do token) e o _typ_ (tipo 
+do token - no caso, JWT);
+* **payload**: dados da autenticação (como email e senha, por exemplo);
+* **signature**: a _assinatura_ do token, formata pela codificação do header e do payload somada a uma chave secreta
+(única da aplicação). Essa assinatura é gerada pelo algoritmo especificado no cabeçalho.
+
+Cada uma dessas partes é separada por um ponto (_header.payload.signature_). 
+
+Exemplo:
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+```
 
 ## Dependências
 
@@ -250,4 +271,77 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 }
+```
+
+## Utilizando o JWT
+
+Podemos obter diversas informações sobre o padrão **JWT** no site [jwt.io](https://jwt.io/). Lá, podemos ver diversas
+bibliotecas para diversas linguagens diferentes. Iremos usar a [biblioteca da auth0](https://github.com/auth0/java-jwt):
+
+```XML
+<dependency>
+  <groupId>com.auth0</groupId>
+  <artifactId>java-jwt</artifactId>
+  <version>4.2.1</version>
+</dependency>
+```
+
+Para gerarmos os tokens, primeiro precisamos criar uma _secret key_ da aplicação. Ela será usada para encriptar o token 
+para garantir que um agente malicioso que intercepte os dados da requisição não descubra os dados do usuário. 
+
+Para isso, adicionamos no _application.properties_ uma propriedade que irá receber como valor uma _variável de 
+ambiente_. Isso porque não é uma boa prática deixar dados sensíveis (como _secret key_, senhas, etc.) diretamente no 
+código. Ao invés disso, a gente cria variáveis de ambientes e pede para o Spring buscar esses valores em tempo de 
+execução. Basta definir o valor da propriedade como ${NOME_DA_VARIAVEL_DE_AMBIENTE:Valor default}:
+
+```
+api.security.token.secret=${JWT_SECRET:12345678}
+```
+
+Precisamos criar uma classe de serviço para geração dos tokens que irá utilizar a _secret key_ criada:
+
+```Java
+@Service
+public class TokenService {
+    @Value("${api.security.token.secret}")
+    private String secret;
+    
+    public String generateToken(User user) {
+        try {
+            var algorithm = Algorithm.HMAC256(secret); // Algoritmo de encriptação. Recebe como argumento a secret key da aplicação
+            String token = JWT.create()
+                            .withIssuer("Spring Study") // Define a aplicação que gerou o token
+                            .withSubject(user.getLogin()) // Identifica o usuário
+                            .withClaim("id", user.getId()) // Podemos adicionar qualquer informação relevante usando o withClaim
+                            .withExpiresAt(generateExpirationDate()) // Define a data/hora de expiração do token
+                            .sign(algorithm) // Define o algoritmo de encriptação do token;
+            return token;
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Erro ao gerar um JWT", exception);
+        }
+    }
+    
+    private Instant generateExpirationDate() {
+        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    }
+}
+```
+
+É uma boa prática criar um DTO para devolver o token:
+
+```Java
+public record TokenDTO(String token) {}
+```
+
+Agora basta usar no _controller_ a classe de serviço criada:
+
+```Java
+@PostMapping
+public ResponseEntity login(@RequestBody @Valid AuthenticationDTO authenticationDTO) {
+    var authenticationToken = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
+    var authentication = authenticationManager.authenticate(authenticationToken);
+    var token = tokenService.generateToken((User) authentication.getPrincipal());
+    var tokenDTO = new TokenDTO(token);
+    return ResponseEntity.ok(tokenDTO);
+} 
 ```
