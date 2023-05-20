@@ -41,4 +41,8 @@ public class Patient {
         if (dto.address() != null)
             this.address = new Address(dto.address());
     }
+
+    public void inactivate() {
+        this.active = false;
+    }
 }
