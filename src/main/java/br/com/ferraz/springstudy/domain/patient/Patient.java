@@ -28,4 +28,17 @@ public class Patient {
         this.address = new Address(dto.address());
         this.active = true;
     }
+
+    public void update(UpdatePatientDTO dto) {
+        if (dto.name() != null)
+            this.name = dto.name();
+        if (dto.email() != null)
+            this.email = dto.email();
+        if (dto.phoneNumber() != null)
+            this.phoneNumber = dto.phoneNumber();
+        if (dto.cpf() != null)
+            this.cpf = dto.cpf();
+        if (dto.address() != null)
+            this.address = new Address(dto.address());
+    }
 }
