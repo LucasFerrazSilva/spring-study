@@ -1,8 +1,6 @@
 package br.com.ferraz.springstudy.controller;
 
 import br.com.ferraz.springstudy.domain.appointment.*;
-import br.com.ferraz.springstudy.domain.doctor.DoctorRepository;
-import br.com.ferraz.springstudy.domain.patient.PatientRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -38,7 +36,7 @@ public class AppointmentController {
     }
     @GetMapping
     public ResponseEntity<Page> list(@PageableDefault Pageable pageable) {
-        Page<Appointment> list = repository.findAll(pageable);
+        Page<Appointment> list = repository.findByActiveIsTrue(pageable);
         Page<AppointmentListDTO> listDTOs = list.map(AppointmentListDTO::new);
 
         return ResponseEntity.ok(listDTOs);
@@ -46,6 +44,12 @@ public class AppointmentController {
 
     // Read (Get)
     // Update
-    // Delete
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity cancel(@RequestBody @Valid CancelAppointmentDTO dto) {
+        service.cancelAppointment(dto);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }

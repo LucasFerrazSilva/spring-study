@@ -1,5 +1,6 @@
 package br.com.ferraz.springstudy.domain.appointment;
 
+import br.com.ferraz.springstudy.controller.CancelAppointmentDTO;
 import br.com.ferraz.springstudy.domain.doctor.Doctor;
 import br.com.ferraz.springstudy.domain.doctor.DoctorRepository;
 import br.com.ferraz.springstudy.domain.patient.Patient;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 @Service
 public class AppointmentService {
@@ -88,5 +88,16 @@ public class AppointmentService {
         return dto.appointmentTime().getDayOfWeek().equals(DayOfWeek.SUNDAY)
                 || dto.appointmentTime().toLocalTime().isBefore(LocalTime.of(7, 0, 0))
                 || dto.appointmentTime().toLocalTime().isAfter(LocalTime.of(19, 0, 0));
+    }
+
+    public void cancelAppointment(CancelAppointmentDTO dto) {
+        Appointment appointment = repository.findById(dto.id())
+                .orElseThrow(() -> new ValidationException("id", "Nenhuma consulta encontrada para o ID fornecido."));
+
+        if (!appointment.canCancel()) {
+            throw new ValidationException("id", "Não é possível cancelar a consulta com menos de 24 horas de antecedência");
+        }
+
+        appointment.cancel(dto.reasonForCancellation());
     }
 }

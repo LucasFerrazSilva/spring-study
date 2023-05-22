@@ -21,12 +21,17 @@ public class Appointment {
     @JoinColumn(name="doctor_id")
     private Doctor doctor;
     private LocalDateTime appointmentTime;
+    @Column(nullable = false, columnDefinition = "TINYINT")
+    private Boolean active;
+    @Enumerated(EnumType.STRING)
+    private ReasonForCancellation reasonForCancellation;
 
 
     public Appointment(Patient patient, Doctor doctor, LocalDateTime appointmentTime) {
         this.patient = patient;
         this.doctor = doctor;
         this.appointmentTime = appointmentTime;
+        this.active = true;
     }
 
     public String getPatientName() {
@@ -37,9 +42,16 @@ public class Appointment {
         return this.doctor.getName();
     }
 
-    public Long getDoctorId() { return this.doctor.getId(); }
-
     public String getDoctorExpertise() {
         return this.doctor.getExpertise().toString();
+    }
+
+    public boolean canCancel() {
+        return LocalDateTime.now().isBefore(this.appointmentTime.minusHours(24));
+    }
+
+    public void cancel(ReasonForCancellation reasonForCancellation){
+        this.active = false;
+        this.reasonForCancellation = reasonForCancellation;
     }
 }
