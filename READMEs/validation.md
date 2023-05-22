@@ -91,3 +91,49 @@ Exemplo:
 ```
 
 Para mais detalhes sobre tratamento de erros, veja [esse techo do README sobre Controllers](controller.md#lidando-com-erros-na-api).
+
+## Interfaces customizadas
+
+Apesar de não utilizar o Spring Security, essa técnica de validação é bastante útil e prática: ela consiste na 
+criação de um pacote de classes que ficarão responsáveis pela validação de uma regra de negócio específica. Todas
+essas classes irão implementar uma mesma interface. Por fim, na classe de serviços, iremos pedir para o Spring
+injetar todos os componentes que implementam a interface em questão.
+
+**Exemplo**
+
+Classe que implementa uma regra de negócio (note que está anotada com _@Component_ e implementa a interface
+_NewAppointmentValidator_):
+
+```Java
+@Component
+public class AppointmentTimeAfter30MinutesFromNowValidator implements NewAppointmentValidator {
+
+    public void validate(NewAppointmentDTO dto) {
+        long minutesUntilAppointment = Duration.between(LocalDateTime.now(), dto.appointmentTime()).toMinutes();
+
+        if (minutesUntilAppointment < 30)
+            throw new ValidationException("appointmentTime", "Não é possível realizar o agendamento com menos de 30 minutos de antecedência.");
+    }
+}
+```
+
+Interface:
+
+```Java
+public interface NewAppointmentValidator {
+    void validate(NewAppointmentDTO dto);
+}
+```
+
+Classe de serviço que usa os validadores:
+
+```Java
+@Autowired // O Spring busca todas os componentes que implementam essa interface e injeta automaticamente na lista
+private List<NewAppointmentValidator> validators;
+
+public Appointment scheduleAppointment(NewAppointmentDTO dto) {
+    ...
+    validators.forEach(validator -> validator.validate(dto));
+    ...
+}
+```

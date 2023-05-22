@@ -15,4 +15,10 @@ public record NewAppointmentDTO(
         @Future
         LocalDateTime appointmentTime
 ) {
+        public NewAppointmentDTO(Long patientId, Long doctorId, Expertise expertise, LocalDateTime appointmentTime) {
+                this.patientId = patientId;
+                this.doctorId = doctorId;
+                this.expertise = expertise;
+                this.appointmentTime = (appointmentTime != null ? appointmentTime.withMinute(0).withSecond(0) : null);
+        }
 }

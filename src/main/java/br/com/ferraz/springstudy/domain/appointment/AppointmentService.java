@@ -29,10 +29,11 @@ public class AppointmentService {
     }
 
     public Appointment scheduleAppointment(NewAppointmentDTO dto) {
-        dto = new NewAppointmentDTO(dto.patientId(), dto.doctorId(), dto.expertise(), dto.appointmentTime().withMinute(0).withSecond(0));
-        Appointment appointment = validateDTO(dto);
+        Patient patient = getPatient(dto);
+        Doctor doctor = getDoctor(dto);
+        validators.forEach(validator -> validator.validate(dto));
+        Appointment appointment = new Appointment(patient, doctor, dto.appointmentTime());
         repository.save(appointment);
-
         return appointment;
     }
 
