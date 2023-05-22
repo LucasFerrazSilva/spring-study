@@ -14,6 +14,7 @@ Principais anotações:
 * **@Pattern(regexp=expressaoRegular)**: verifica se o campo está de acordo com a _expressão regular_ informada (ex: 
 _@Pattern(regexp="\\d{4,6}")_ -> Verifica se o campo possui de 4 a 6 dígitos)
 * **@Valid**: solicita ao Spring Validation que verifique se os campos do objeto são validos
+* **@Future**: exige uma data/hora no futuro
 
 Vale ressaltar que, para o Spring Validation validar um objeto, precisamos anotá-lo com **@Valid**.
 

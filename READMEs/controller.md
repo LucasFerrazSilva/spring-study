@@ -73,6 +73,47 @@ toString, etc.:
 public record ObjectDTO (String field1, Integer field2, AnotherObject anotherObject) {}
 ```
 
+### Mapeamento de atributos
+
+Quando anotamos um DTO com _@RequestBody_, o Spring faz o _binding_ dos campos recebidos com os atributos do DTO
+automaticamente pelo nome. Porém, quando recebemos um campo do JSON com um padrão de nomenclatura diferente do 
+recomendado (cammel case), podemos usar a anotação **@JsonAlias** para fazer o _binding_ manualmente.
+
+**Exemplo**
+
+Considere que estamos recebendo o seguinte JSON:
+
+```JSON
+{
+    “produto_id” : 12,
+    “data_da_compra” : “01/01/2022”
+}
+```
+
+O DTO ficaria da seguinte forma:
+
+```Java
+public record DadosCompra(
+    @JsonAlias({"produto_id", "id_produto"}) Long idProduto,
+    @JsonAlias("data_da_compra") LocalDate dataCompra
+){}
+```
+
+Note que a anotação pode receber mais de um valor de mapeamento (ou seja, tanto faz o campo estar como "produto_id" ou 
+"id_produto", o Spring irá mapear para o campo _idProduto_).
+
+### @JsonFormat
+
+O Spring espera um padrão de datas específico para fazer o mapeamento para um _LocalDateTime_ (
+"ano-mes-diaThora:minutos:segundos", ex: _2023-03-04T10:40:52_). Para usarmos um formato diferente, podemos usar a 
+anotação _@JsonFormat(pattern="x")_.
+
+Exemplo:
+```Java
+@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+LocalDateTime data;
+```
+
 ### Mass Assignment Attack
 
 O padrão DTO é fundamental para evitar o **Mass Assignment Attack**, que consiste no usuário malicioso enviar uma 

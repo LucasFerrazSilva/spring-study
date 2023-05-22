@@ -426,3 +426,27 @@ public Page<DoctorReadDTO> list(@PageableDefault(sort="name", direction = Sort.D
     return list;
 }
 ```
+
+### @Query
+
+Quando queremos fazer uma query um pouco mais complexa (por exemplo, usando _subqueries_), podemos usar a anotação
+_@Query_, que utiliza [JPQL](https://www.tutorialspoint.com/pg/jpa/jpa_jpql.htm#:~:text=JPQL%20significa%20Java%20Persistence%20Query,o%20banco%20de%20dados%20diretamente.)
+ para montar as queries.
+
+Exemplo:
+
+```Java
+@Query("""
+        SELECT d FROM Doctor d
+        WHERE
+            d.active = 1 
+            AND d.expertise = :expertise
+            AND d.id NOT IN (
+                SELECT a.doctor.id FROM Appointment a WHERE a.appointmentTime = :appointmentTime
+            )
+        ORDER BY
+            rand()
+        LIMIT 1 
+        """)
+Optional<Doctor> findRandomFreeDoctorAtTheAppointmentTimeWithExpertise(LocalDateTime appointmentTime, Expertise expertise);
+```
