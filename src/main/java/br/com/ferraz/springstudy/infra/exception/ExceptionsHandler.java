@@ -56,10 +56,9 @@ public class ExceptionsHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro: " +ex.getLocalizedMessage());
     }
 
-    private record ValidationExceptionDataDTO(String field, String message){
-        public ValidationExceptionDataDTO(FieldError error){
-            this(error.getField(), error.getDefaultMessage());
-        }
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity tratarErroValidacao(ValidationException ex) {
+        return ResponseEntity.badRequest().body(ex.getDto());
     }
 
 }

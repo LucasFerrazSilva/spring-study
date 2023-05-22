@@ -23,4 +23,24 @@ public class Appointment {
 
     private LocalDateTime appointmentTime;
 
+
+    public Appointment(Patient patient, Doctor doctor, LocalDateTime appointmentTime) {
+        this.patient = patient;
+        this.doctor = doctor;
+        this.appointmentTime = appointmentTime;
+    }
+
+    public String getPatientName() {
+        return this.patient.getName();
+    }
+
+    public String getDoctorName() {
+        return this.doctor.getName();
+    }
+
+    public Long getDoctorId() { return this.doctor.getId(); }
+
+    public String getDoctorExpertise() {
+        return this.doctor.getExpertise().toString();
+    }
 }

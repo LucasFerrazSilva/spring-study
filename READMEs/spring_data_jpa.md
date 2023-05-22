@@ -226,8 +226,9 @@ List<Entidade> findByName(String name);
 List<Entidade> findTop3ByName(String name);
 List<Entidade> queryDistinctByName(String name);
 List<Entidade> readByName(String name);
-List<Entidade> countByName(String name);
+int countByName(String name);
 List<Entidade> getFirstByName(String name);
+Boolean existsByName(String name);
 ```
 
 #### Criteria
