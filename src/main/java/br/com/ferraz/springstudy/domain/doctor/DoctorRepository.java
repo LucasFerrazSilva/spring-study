@@ -21,7 +21,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
                 d.active = 1 
                 AND d.expertise = :expertise
                 AND d.id NOT IN (
-                    SELECT a.doctor.id FROM Appointment a WHERE a.appointmentTime = :appointmentTime
+                    SELECT a.doctor.id FROM Appointment a WHERE a.appointmentTime = :appointmentTime AND a.active = 1
                 )
             ORDER BY
                 rand()

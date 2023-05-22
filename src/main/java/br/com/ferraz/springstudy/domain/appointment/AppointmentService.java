@@ -73,11 +73,11 @@ public class AppointmentService {
     }
 
     private boolean existsAppointmentForTheDoctorAtTheSameTime(NewAppointmentDTO dto, Doctor doctor) {
-        return repository.existsByDoctorAndAppointmentTime(doctor, dto.appointmentTime());
+        return repository.existsByDoctorAndAppointmentTimeAndActiveIsTrue(doctor, dto.appointmentTime());
     }
 
     private boolean patientHasAppointmentInTheSameDay(NewAppointmentDTO dto, Patient patient) {
-        return repository.existsByPatientAndAppointmentTimeBetween(patient, dto.appointmentTime().withHour(0), dto.appointmentTime().withHour(23));
+        return repository.existsByPatientAndAppointmentTimeBetweenAndActiveIsTrue(patient, dto.appointmentTime().withHour(0), dto.appointmentTime().withHour(23));
     }
 
     private boolean isBefore30MinutesFromNow(NewAppointmentDTO dto) {
