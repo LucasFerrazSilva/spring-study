@@ -1,16 +1,16 @@
 package br.com.ferraz.springstudy.domain.appointment;
 
 import br.com.ferraz.springstudy.controller.CancelAppointmentDTO;
+import br.com.ferraz.springstudy.domain.appointment.validations.NewAppointmentValidator;
 import br.com.ferraz.springstudy.domain.doctor.Doctor;
 import br.com.ferraz.springstudy.domain.doctor.DoctorRepository;
 import br.com.ferraz.springstudy.domain.patient.Patient;
 import br.com.ferraz.springstudy.domain.patient.PatientRepository;
 import br.com.ferraz.springstudy.infra.exception.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class AppointmentService {
@@ -18,6 +18,9 @@ public class AppointmentService {
     private AppointmentRepository repository;
     private PatientRepository patientRepository;
     private DoctorRepository doctorRepository;
+
+    @Autowired // O Spring busca todas os componentes que implementam essa interface e injeta automaticamente na lista
+    private List<NewAppointmentValidator> validators;
 
     public AppointmentService(AppointmentRepository repository, PatientRepository patientRepository, DoctorRepository doctorRepository) {
         this.repository = repository;
@@ -34,34 +37,24 @@ public class AppointmentService {
     }
 
     public Appointment validateDTO(NewAppointmentDTO dto) {
-        Patient patient = validateAndGetPatient(dto);
-        Doctor doctor = validateAndGetDoctor(dto);
+        Patient patient = getPatient(dto);
+        Doctor doctor = getDoctor(dto);
 
-        if (isOutsideOpeningHours(dto))
-            throw new ValidationException("appointmentTime", "Dia/Horário inválido (somente de segunda à sábado das 7 às 19)");
-
-        if(isBefore30MinutesFromNow(dto))
-            throw new ValidationException("appointmentTime", "Não é possível realizar o agendamento com menos de 30 minutos de antecedência.");
-
-        if (patientHasAppointmentInTheSameDay(dto, patient))
-            throw new ValidationException("appointmentTime", "O paciente já possui uma consulta para o dia especificado.");
+        validators.forEach(validator -> validator.validate(dto));
 
         Appointment appointment = new Appointment(patient, doctor, dto.appointmentTime());
         return appointment;
     }
 
-    private Patient validateAndGetPatient(NewAppointmentDTO dto) {
+    private Patient getPatient(NewAppointmentDTO dto) {
         return patientRepository.findByIdAndActiveIsTrue(dto.patientId())
                 .orElseThrow(() -> new ValidationException("patientId", "Nenhum paciente ativo encontrado para o ID fornecido"));
     }
 
-    private Doctor validateAndGetDoctor(NewAppointmentDTO dto) {
+    private Doctor getDoctor(NewAppointmentDTO dto) {
         if (dto.doctorId() != null) {
             Doctor doctor = doctorRepository.findByIdAndActiveIsTrue(dto.doctorId())
                     .orElseThrow(() -> new ValidationException("doctorId", "Nenhum médico ativo encontrado para o ID fornecido."));
-
-            if (existsAppointmentForTheDoctorAtTheSameTime(dto, doctor))
-                throw new ValidationException("appointmentTime", "O médico já possui uma consulta nesse dia/hora.");
 
             return doctor;
         } else if (dto.expertise() != null) {
@@ -70,24 +63,6 @@ public class AppointmentService {
         } else {
             throw new ValidationException("doctorId", "Favor informar o médico ou a especialidade desejada.");
         }
-    }
-
-    private boolean existsAppointmentForTheDoctorAtTheSameTime(NewAppointmentDTO dto, Doctor doctor) {
-        return repository.existsByDoctorAndAppointmentTimeAndActiveIsTrue(doctor, dto.appointmentTime());
-    }
-
-    private boolean patientHasAppointmentInTheSameDay(NewAppointmentDTO dto, Patient patient) {
-        return repository.existsByPatientAndAppointmentTimeBetweenAndActiveIsTrue(patient, dto.appointmentTime().withHour(0), dto.appointmentTime().withHour(23));
-    }
-
-    private boolean isBefore30MinutesFromNow(NewAppointmentDTO dto) {
-        return dto.appointmentTime().minusMinutes(30).isBefore(LocalDateTime.now());
-    }
-
-    private boolean isOutsideOpeningHours(NewAppointmentDTO dto) {
-        return dto.appointmentTime().getDayOfWeek().equals(DayOfWeek.SUNDAY)
-                || dto.appointmentTime().toLocalTime().isBefore(LocalTime.of(7, 0, 0))
-                || dto.appointmentTime().toLocalTime().isAfter(LocalTime.of(19, 0, 0));
     }
 
     public void cancelAppointment(CancelAppointmentDTO dto) {

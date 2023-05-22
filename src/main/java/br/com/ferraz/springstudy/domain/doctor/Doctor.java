@@ -36,6 +36,10 @@ public class Doctor {
         this.active = true;
     }
 
+    public Doctor(Long doctorId) {
+        this.id = doctorId;
+    }
+
     public void update(DoctorUpdateDTO dto) {
         if (dto.name() != null)
             this.name = dto.name();
