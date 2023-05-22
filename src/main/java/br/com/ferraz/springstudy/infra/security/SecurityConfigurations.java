@@ -30,6 +30,7 @@ public class SecurityConfigurations {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Desabilita a criação de sessões
                 .and().authorizeHttpRequests() // Informa que iremos personalidar as autorizações das requisições
                 .requestMatchers(HttpMethod.POST, "/login").permitAll() // Define que qualquer um pode acessar o endpoint /login
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll() // SpringDoc
                 .anyRequest().authenticated() // Exige autorização dos demais endpoints
                 .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) // Coloca a nossa classe filter antes da própria classe do Spring
                 .build();
