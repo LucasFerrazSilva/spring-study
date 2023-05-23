@@ -27,13 +27,13 @@ public class AppointmentService {
         this.doctorRepository = doctorRepository;
     }
 
-    public Appointment scheduleAppointment(NewAppointmentDTO dto) {
+    public AppointmentInfosDTO scheduleAppointment(NewAppointmentDTO dto) {
         Patient patient = getPatient(dto);
         Doctor doctor = getDoctor(dto);
         validators.forEach(validator -> validator.validate(dto));
         Appointment appointment = new Appointment(patient, doctor, dto.appointmentTime());
         repository.save(appointment);
-        return appointment;
+        return new AppointmentInfosDTO(appointment);
     }
 
     public Appointment validateDTO(NewAppointmentDTO dto) {

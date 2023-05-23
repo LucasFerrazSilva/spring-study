@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 
 public record AppointmentInfosDTO(
         Long id,
-        PatientInfosDTO patient,
-        DoctorInfosDTO doctor,
+        Long patientId,
+        Long doctorId,
         LocalDateTime appointmentTime
 ) {
     public AppointmentInfosDTO(Appointment appointment) {
-        this(appointment.getId(), new PatientInfosDTO(appointment.getPatient()),
-                new DoctorInfosDTO(appointment.getDoctor()), appointment.getAppointmentTime());
+        this(appointment.getId(), appointment.getPatient().getId(), appointment.getDoctor().getId(),
+                appointment.getAppointmentTime());
     }
 }

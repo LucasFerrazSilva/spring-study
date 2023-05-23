@@ -62,7 +62,7 @@ apenas a propriedade da URL do banco de testes. As demais propriedades (usuário
 do _application.properties_ original. Para que o Spring use esse arquivo de configurações, precisamos adicionar a 
 anotação **@ActiveProfiles("test")** nas classes de teste.
 
-## Criando testes de Repositories
+## Criando testes de _Repositories_
 
 Vale ressaltar que os métodos que usam a sintaxe padrão do Spring Data (findByX, countByY, etc.) já são validados pelo 
 Spring. Porém, quando criamos queries personalidas, temos que testá-la devidamente para garantir que sempre está 
@@ -125,3 +125,47 @@ void testFindRandomFreeDoctorAtTheAppointmentTimeWithExpertiseCase1() {
 ```
 
 A cada teste, o Spring irá limpar a base de dados para que um teste não influencie nos outros.
+
+## Criando testes de _Controllers_
+
+Quando vamos testar os _controllers_, podemos fazer de duas formas: subindo a aplicação e fazendo requisições ou 
+_simulando_ que a aplicação está rodando utilizando _mocks_. O primeiro caso é chamado de **teste de integração**. Ele
+é bem mais pesado, pois cada teste irá realmente executar todo o fluxo da aplicação, inclusive o acesso ao banco de 
+dados. Apesar de mais pesado, ele acaba passando mais segurança. Já o segundo caso é bem mais leve, pois os recursos 
+que são utilizados pelo controller são apenas _mocks_. No exemplo a seguir, iremos usar o segundo caso.
+
+Primeiro, criamos a classe para testar o controller em questão e então precisamos anotá-la com **@SpringBootTest** e
+**@AutoConfigureMockMvc**:
+
+```Java
+@SpringBootTest
+@AutoConfigureMockMvc
+class AppointmentControllerTest { ... }
+```
+
+Após isso, precisamos solicitar a injeção da classe **MockMvc**, que irá simular as requisições ao controller:
+
+```Java
+@Autowired
+private MockMvc mockMvc; // simula requisições no padrão mvc
+```
+
+Quando vamos testar endpoints que requerem autenticação, podemos pedir ao Spring que ignore essa parte de segurança
+usando a anotação **@WithMockUser**.
+
+Para simular uma requisição usando o **MockMvc**, usamos o método **perform()**, passando um método estático com o tipo
+de requisição desejada:
+
+```Java
+@Test
+@DisplayName("Deve devolver codigo htttp 400 quando informações estão inválidas")
+@WithMockUser
+void textScheduleCase1() throws Exception {
+    MockHttpServletResponse response = mockMvc.perform(post("/consultas")).andReturn().getResponse();
+
+    assertThat(response.getStatus()).isEqualTo(BAD_REQUEST.value());
+}
+```
+
+Podemos entar pegar o objeto **MockHttpServletResponse** para validar dados da resposta enviada pelo controller.
+

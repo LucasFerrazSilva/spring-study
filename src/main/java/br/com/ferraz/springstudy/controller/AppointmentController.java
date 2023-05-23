@@ -28,12 +28,9 @@ public class AppointmentController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity save(@RequestBody @Valid NewAppointmentDTO dto, UriComponentsBuilder uriBuilder) {
-        Appointment appointment = service.scheduleAppointment(dto);
-
-        URI uri = uriBuilder.path("/consultas/{id}").buildAndExpand(appointment.getId()).toUri();
-        AppointmentInfosDTO infosDTO = new AppointmentInfosDTO(appointment);
-
+    public ResponseEntity schedule(@RequestBody @Valid NewAppointmentDTO dto, UriComponentsBuilder uriBuilder) {
+        AppointmentInfosDTO infosDTO = service.scheduleAppointment(dto);
+        URI uri = uriBuilder.path("/consultas/{id}").buildAndExpand(infosDTO.id()).toUri();
         return ResponseEntity.created(uri).body(infosDTO);
     }
     @GetMapping
