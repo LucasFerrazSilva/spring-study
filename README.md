@@ -121,3 +121,18 @@ Para mais informações, veja [esse README](READMEs/validation.md).
 O **Spring Security** é o módulo do Spring Framework responsável por tratar da segurança das aplicações.
 
 Para mais informações, veja [esse README](READMEs/security.md).
+
+## OpenAPI
+
+A **OpenAPI** é uma especificação sobre como documentar APIs. Ela é muito útil para que os clientes da sua API possam
+saber mais sobre os endpoints disponíveis sem precisarem acessar o código fonte da aplicação.
+
+Para mais informações, veja [esse README](READMEs/documentation.md).
+
+## Testes automatizados
+
+Os testes automatizados são fundamentais nas aplicação por garantirem que todas as funcionalidades da aplicação estão
+funcionando corretamente, garantindo maior confiabilidade do código e maior segurança caso seja necessário fazer alguma
+alteração nele futuramente.
+
+Para mais informações, veja [esse README](READMEs/tests.md);
