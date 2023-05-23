@@ -68,3 +68,32 @@ public class AppointmentController { ... }
 @SecurityRequirement(name="bearer-key")
 public ResponseEntity<DoctorInfosDTO> get(@PathVariable Long id) { ... }
 ```
+
+## Outras configurações importantes
+
+Além de configurar o token, também é importante adicionar nas configurações os dados da API e a licença:
+
+```Java
+@Bean
+public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+            .components(new Components()
+                    .addSecuritySchemes("bearer-key",
+                            new SecurityScheme()
+                                    .type(SecurityScheme.Type.HTTP)
+                                    .scheme("bearer")
+                                    .bearerFormat("JWT")))
+                    .info(new Info()
+                            .title("Spring Study API")
+                            .description("API Rest da aplicação Spring Study, contendo as funcionalidades de CRUD de médicos e de pacientes, além de agendamento e cancelamento de consultas")
+                            .contact(new Contact()
+                                    .name("Time Backend")
+                                    .email("backend@springstudy.com"))
+                    .license(new License()
+                            .name("Apache 2.0")
+                            .url("http://springstudy/api/licenca")));
+}
+```
+
+Para mais informações sobre essas e outras configurações, veja a 
+[documentação oficial](https://spec.openapis.org/oas/latest.html#schema).
