@@ -1,6 +1,5 @@
 package br.com.ferraz.springstudy.domain.appointment;
 
-import br.com.ferraz.springstudy.controller.CancelAppointmentDTO;
 import br.com.ferraz.springstudy.domain.appointment.validations.NewAppointmentValidator;
 import br.com.ferraz.springstudy.domain.doctor.Doctor;
 import br.com.ferraz.springstudy.domain.doctor.DoctorRepository;

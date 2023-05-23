@@ -1,7 +1,10 @@
 # Documentação
 
 Quando construímos uma API, é fundamental disponibilizar uma documentação que possibilite aos usuários saber quais
-são os endpoints disponíveis sem precisar olhar o código fonte da aplicação.
+são os endpoints disponíveis sem precisar olhar o código fonte da aplicação. Até 2010, não havia um consenso sobre
+como deveria ser essa documentação, até que surgiu a especificação [Swagger](https://swagger.io/), que foi
+amplamente adotado como o padrão de documentação de APIs. Posteriormente, essa especificação foi renomeada para 
+[OpenAPI](https://www.openapis.org/).
 
 Existem diversas ferramentas que analisam o código da aplicação e geram essa documentação automaticamente. Além de
 poupar o trabalho num primeiro momento, essas ferramentas são fundamentais no longo prazo, pois ela irá atualizar 
@@ -32,4 +35,36 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws
                 ...
                 .build();
 }
+```
+
+## JWT na documentação
+
+Para informarmos na documentação que certos _endpoints_ exigem um token JWT, precisamos criar uma classe de configuração
+_SpringDocConfigurations_ e adicionar um _Bean_ que adiciona a configuração de _bearer-key_:
+
+```Java
+@Configuration
+public class SpringDocConfigurations {
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .components(new Components()
+                        .addSecuritySchemes("bearer-key",
+                                new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+    }
+}
+```
+
+Após isso, precisamos anotar os endpoints que requerem um token JWT. Podemos anotar os métodos individualmente ou a 
+classe para que aplique para todos os métodos da mesma:
+
+```Java
+@SecurityRequirement(name="bearer-key")
+public class AppointmentController { ... }
+
+// Ou
+
+@GetMapping("/{id}")
+@SecurityRequirement(name="bearer-key")
+public ResponseEntity<DoctorInfosDTO> get(@PathVariable Long id) { ... }
 ```

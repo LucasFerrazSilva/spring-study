@@ -1,6 +1,7 @@
 package br.com.ferraz.springstudy.controller;
 
 import br.com.ferraz.springstudy.domain.appointment.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/consultas")
+@SecurityRequirement(name="bearer-key")
 public class AppointmentController {
 
     private AppointmentRepository repository;

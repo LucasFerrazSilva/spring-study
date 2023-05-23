@@ -1,4 +1,4 @@
-package br.com.ferraz.springstudy.controller;
+package br.com.ferraz.springstudy.domain.appointment;
 
 import br.com.ferraz.springstudy.domain.appointment.ReasonForCancellation;
 import jakarta.validation.constraints.NotNull;

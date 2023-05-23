@@ -1,6 +1,7 @@
 package br.com.ferraz.springstudy.controller;
 
 import br.com.ferraz.springstudy.domain.patient.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
@@ -15,6 +16,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/pacientes")
+@SecurityRequirement(name="bearer-key")
 public class PatientController {
 
     private PatientRepository repository;
