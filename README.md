@@ -135,4 +135,12 @@ Os testes automatizados são fundamentais nas aplicação por garantirem que tod
 funcionando corretamente, garantindo maior confiabilidade do código e maior segurança caso seja necessário fazer alguma
 alteração nele futuramente.
 
-Para mais informações, veja [esse README](READMEs/tests.md);
+Para mais informações, veja [esse README](READMEs/tests.md).
+
+## Build
+
+Quando queremos disponibilizar a aplicação para que outras pessoas possam acessá-la, precisamos colocar a aplicação em
+algum servidor, seja um servidor próprio (on-premise) ou em algum provedor (nuvem). Só que, para isso, precisamos 
+configurar a _build_ da aplicação.
+
+Para mais informações, veja [esse README](READMEs/build.md).
